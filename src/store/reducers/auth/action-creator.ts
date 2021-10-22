@@ -1,5 +1,6 @@
 import axios from "axios";
 import { AppDispatch } from "../..";
+import UserService from "../../../api/UserService";
 import { IUser } from "../../../models/IUser";
 import {
   AuthActionEnum,
@@ -35,7 +36,8 @@ export const AuthActionCreator = {
       try {
         dispatch(AuthActionCreator.setIsLoading(true));
         setTimeout(async () => {
-          const responce = await axios.get<IUser[]>("./users.json");
+          // const responce = await axios.get<IUser[]>("./users.json");
+          const responce = await UserService.getUsers();
           const mockUsers = responce.data.find(
             (user) => user.username === username && user.password === password
           );
@@ -72,6 +74,6 @@ export const AuthActionCreator = {
       localStorage.removeItem("username");
       dispatch(AuthActionCreator.setUser({} as IUser));
       dispatch(AuthActionCreator.setISAuth(false));
-    } catch (error) {}
+    } catch (error) { }
   },
 };

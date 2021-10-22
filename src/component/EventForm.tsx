@@ -1,8 +1,22 @@
 import { Button, DatePicker, Form, Input, Row, Select } from "antd";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
+import { IEvent } from "../models/IEvent";
+import { IUser } from "../models/IUser";
 import { rules } from "../utils/rules";
 
-const EventForm: FC = () => {
+interface IEventFormProps {
+  guests: IUser[];
+}
+
+const EventForm: FC<IEventFormProps> = (props) => {
+
+  const [event, setEvent] = useState<IEvent>({
+    author: '',
+    date: '',
+    description: '',
+    guest: '',
+  } as IEvent)
+
   return (
     <Form
       name="basic"
@@ -27,18 +41,13 @@ const EventForm: FC = () => {
         <DatePicker onChange={() => console.log("onChange")} />
       </Form.Item>
 
-      <Form.Item label="Дата события" name="date" rules={[rules.reuired()]}>
+      <Form.Item label="Выберите гостя" name="guest" rules={[rules.reuired()]}>
         <Select
-          defaultValue="lucy"
           style={{ width: 120 }}
-          onChange={() => console.log("onChange")}
+          onChange={(guest: string) => setEvent({ ...event, guest })}
         >
-          <Select.Option value="jack">Jack</Select.Option>
-          <Select.Option value="lucy">Lucy</Select.Option>
-          <Select.Option value="disabled" disabled>
-            Disabled
-          </Select.Option>
-          <Select.Option value="Yiminghe">yiminghe</Select.Option>
+          {props.guests.map(guest => <Select.Option key={guest.username} value={guest.username}>{guest.username}</Select.Option>)}
+
         </Select>
       </Form.Item>
 
