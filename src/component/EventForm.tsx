@@ -1,11 +1,16 @@
 import { Button, DatePicker, Form, Input, Row, Select } from "antd";
+import { Moment } from "moment";
 import React, { FC, useState } from "react";
+import { $CombinedState } from "redux";
+import { useTypedSelector } from "../hooks/useTypeSelector";
 import { IEvent } from "../models/IEvent";
 import { IUser } from "../models/IUser";
+import { formatDate } from "../utils/formatDate";
 import { rules } from "../utils/rules";
 
 interface IEventFormProps {
   guests: IUser[];
+  submit: (event: IEvent) => void
 }
 
 const EventForm: FC<IEventFormProps> = (props) => {
@@ -15,12 +20,24 @@ const EventForm: FC<IEventFormProps> = (props) => {
     date: '',
     description: '',
     guest: '',
-  } as IEvent)
+  } as IEvent);
+
+  const { user } = useTypedSelector(state => state.auth)
+
+  const selectDate = (date: Moment | null) => {
+    if (date) {
+      setEvent({ ...event, date: formatDate(date.toDate()) })
+    }
+  }
+
+  const submitForm = () => {
+    props.submit({ ...event, author: user.username });
+  }
 
   return (
     <Form
       name="basic"
-      // onFinish={submit}
+      onFinish={submitForm}
       onFinishFailed={() => {
         console.log("error");
       }}
@@ -31,14 +48,14 @@ const EventForm: FC<IEventFormProps> = (props) => {
         rules={[rules.reuired()]}
       >
         <Input
-          value={"1"}
+          value={event.description}
           onChange={(e) => {
-            // setUsername(e.target.value);
+            setEvent({ ...event, description: e.target.value });
           }}
         />
       </Form.Item>
-      <Form.Item label="Дата события" name="date" rules={[rules.reuired()]}>
-        <DatePicker onChange={() => console.log("onChange")} />
+      <Form.Item label="Дата события" name="date" rules={[rules.reuired(), rules.isDateAfter("Нельзя создать событие в прошлом")]}>
+        <DatePicker onChange={(e) => selectDate(e)} />
       </Form.Item>
 
       <Form.Item label="Выберите гостя" name="guest" rules={[rules.reuired()]}>

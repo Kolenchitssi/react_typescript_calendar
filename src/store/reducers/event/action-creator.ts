@@ -17,5 +17,28 @@ export const EvenActionCreator = {
       console.log(error);
 
     }
+  },
+  createEvent: (event: IEvent) => async (dispatch: AppDispatch) => {
+    try {
+      const events = localStorage.getItem('events') || '[]';
+      const json = JSON.parse(events) as IEvent[];
+      json.push(event);
+      dispatch(EvenActionCreator.setEvents(json));
+      localStorage.setItem('events', JSON.stringify(json))
+
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  fetchEvents: (username: string) => async (
+    dispatch: AppDispatch) => {
+    try {
+      const events = localStorage.getItem('events') || '[]';
+      const json = JSON.parse(events) as IEvent[];
+      const currentUserEvent = json.filter(ev => ev.author === username || ev.guest === username);
+      dispatch(EvenActionCreator.setEvents(currentUserEvent));
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
