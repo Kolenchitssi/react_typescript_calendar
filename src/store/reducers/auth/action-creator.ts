@@ -36,17 +36,11 @@ export const AuthActionCreator = {
       try {
         dispatch(AuthActionCreator.setIsLoading(true));
         setTimeout(async () => {
+          //получение пользователей
           // const responce = await axios.get<IUser[]>("./users.json");
           const responce = await UserService.getUsers();
           const mockUsers = responce.data.find(
             (user) => user.username === username && user.password === password
-          );
-          console.log(
-            responce.data[0],
-            "username",
-            username,
-            "password",
-            password
           );
 
           if (mockUsers) {
@@ -68,12 +62,13 @@ export const AuthActionCreator = {
         dispatch(AuthActionCreator.setError("Произошла ошибка при логине"));
       }
     },
+
   logout: () => async (dispatch: AppDispatch) => {
     try {
       localStorage.removeItem("auth");
       localStorage.removeItem("username");
       dispatch(AuthActionCreator.setUser({} as IUser));
       dispatch(AuthActionCreator.setISAuth(false));
-    } catch (error) { }
+    } catch (error) {}
   },
 };
